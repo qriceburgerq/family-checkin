@@ -1,89 +1,878 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>家人平安打卡</title>
+    
+    <!-- PWA 設定 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/9355/9355325.png">
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.8.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.8.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <!-- Bootstrap & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts: 引入圓潤字體讓畫面更活潑 -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-    </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+    <style>
+        /* --- 暖黃護眼色系 (Warm Paper Theme) --- */
+        :root {
+            /* 背景改為深一點的暖米黃色，類似再生紙或閱讀模式 */
+            --bg-color: #f2e9db;       
+            
+            /* 卡片改為暖白，與背景形成柔和對比 */
+            --card-bg: #fffcf5;        
+            
+            /* 文字改為帶有暖調的深棕灰，避免純黑過於銳利 */
+            --text-main: #5d5a56;      
+            --text-muted: #9e948a;     
+            
+            --primary-green: #76a686;  /* 鼠尾草綠：主按鈕 */
+            --primary-hover: #5e8a6d;
+            
+            --accent-clay: #e09f7d;    /* 陶土暖橘：強調 */
+            --accent-sand: #e6dac8;    /* 裝飾色 */
+            
+            --danger: #e57373;         /* 柔和紅 */
+            --warning: #f0b27a;        /* 柔和黃 */
+            
+            --shadow-soft: 0 8px 24px rgba(93, 90, 86, 0.08); /* 暖色調陰影 */
+            --radius-lg: 24px;         
         }
-      });
-    </script>
-  </body>
+
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-main);
+            font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+            -webkit-tap-highlight-color: transparent; 
+            letter-spacing: 0.02em;
+        }
+
+        .app-container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            min-height: 100vh; 
+            /* 背景加入微弱的紋理感，更有質感 */
+            background-image: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 20%), 
+                              radial-gradient(circle at 90% 80%, rgba(224, 159, 125, 0.05) 0%, transparent 20%);
+            position: relative; 
+        }
+
+        /* 卡片設計 */
+        .card, .msg-card, .member-card {
+            background-color: var(--card-bg);
+            border: none;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02); /* 降低陰影讓畫面更平面舒適 */
+            transition: transform 0.2s ease;
+        }
+        
+        .member-card:active { transform: scale(0.98); }
+
+        /* 狀態指示燈 */
+        .status-dot {
+            width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 6px;
+        }
+        .safe .status-dot { background-color: var(--primary-green); box-shadow: 0 0 8px var(--primary-green); }
+        .warning .status-dot { background-color: var(--warning); }
+        .danger .status-dot { background-color: var(--danger); animation: pulse 2s infinite; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        
+        /* 巨大打卡按鈕 */
+        .checkin-btn { 
+            width: 100%; 
+            height: 90px; 
+            border-radius: 30px; 
+            font-size: 1.4rem; 
+            font-weight: 700; 
+            border: none;
+            background: linear-gradient(135deg, var(--primary-green), #8bc49e);
+            color: #fff;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .checkin-btn:active { transform: scale(0.96); filter: brightness(0.95); }
+        .checkin-btn i { font-size: 2rem; margin-bottom: 4px; }
+
+        /* 頭像 */
+        .avatar { 
+            width: 52px; height: 52px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            border: 3px solid var(--card-bg); 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        
+        .role-badge { 
+            font-size: 0.65rem; padding: 3px 8px; border-radius: 12px; 
+            font-weight: bold; letter-spacing: 0.5px;
+        }
+        .role-admin { background-color: var(--accent-clay); color: white; }
+
+        /* 導航列 */
+        .navbar { 
+            background: rgba(242, 233, 219, 0.95); /* 配合背景色 */
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.02);
+        }
+
+        /* 留言板 */
+        .chat-area { 
+            background-color: rgba(0,0,0,0.03); /* 使用半透明黑讓底色透出來 */
+            border-radius: 20px; 
+            padding: 15px; 
+            max-height: 400px; 
+            overflow-y: auto; 
+            border: 1px solid rgba(0,0,0,0.01);
+        }
+        .msg-card { 
+            padding: 12px 16px; 
+            border-radius: 16px; 
+            border-bottom-left-radius: 4px; 
+            margin-bottom: 10px; 
+            background-color: var(--card-bg);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .msg-name { color: var(--primary-green); font-weight: bold; font-size: 0.9rem; }
+        .msg-text { color: var(--text-main); margin-top: 4px; line-height: 1.5; }
+
+        /* 輸入框 */
+        .form-control { 
+            background-color: var(--card-bg); 
+            border: 2px solid transparent; 
+            border-radius: 15px;
+            color: var(--text-main); 
+            padding: 10px 15px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+        }
+        .form-control:focus { 
+            background-color: #fff;
+            border-color: var(--primary-green); 
+            box-shadow: none;
+        }
+
+        /* Modal */
+        .modal-content { 
+            background-color: var(--bg-color);
+            border-radius: 24px; border: none; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1); 
+            color: var(--text-main);
+        }
+        .modal-header { border-bottom: none; padding-bottom: 0; }
+        .modal-footer { border-top: none; }
+        .btn-close { filter: opacity(0.5); }
+        
+        /* 緩衝遮罩 */
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); /* 與背景一致 */
+            z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        
+        /* 列表樣式 */
+        .list-group-item {
+            border: none;
+            margin-bottom: 8px;
+            border-radius: 16px !important;
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .list-group-item.active-group {
+            border: 2px solid var(--primary-green);
+            background-color: #eaf4ed; /* 淺綠底 */
+        }
+
+        .btn-link-action { text-decoration: none; color: var(--text-muted); font-size: 0.9rem; }
+        .btn-link-action:hover { color: var(--text-main); }
+    </style>
+</head>
+<body>
+
+<div id="app" class="app-container">
+
+    <!-- 全螢幕緩衝遮罩 -->
+    <div v-if="loading" class="loading-overlay fade-enter-active">
+        <div class="spinner-border text-success mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+        <h5 class="fw-bold" style="color: var(--text-muted)">{{ loadingText || '處理中...' }}</h5>
+    </div>
+
+    <!-- 1. 登入畫面 -->
+    <div v-if="view === 'login'" class="d-flex flex-column justify-content-center align-items-center h-100 p-5 text-center" style="min-height: 100vh;">
+        <div class="mb-5 position-relative">
+            <!-- 活潑的 Icon 組合 -->
+            <div class="bg-white rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 140px; height: 140px;">
+                <i class="fas fa-home fa-4x" style="color: var(--primary-green);"></i>
+            </div>
+            <div class="position-absolute bottom-0 end-0 bg-white rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; transform: rotate(-10deg);">
+                <i class="fas fa-heart text-danger"></i>
+            </div>
+        </div>
+        <h2 class="fw-bold mb-3" style="color: var(--text-main)">家人平安打卡</h2>
+        <p class="text-muted mb-5">簡單、溫暖的家庭報備工具</p>
+        <button @click="login" class="btn btn-dark btn-lg w-100 rounded-pill shadow-sm py-3 fw-bold" style="background-color: var(--text-main); border: none;">
+            <i class="fab fa-google me-2"></i> Google 帳號登入
+        </button>
+    </div>
+
+    <!-- 2. 群組選擇畫面 (初次或無群組時) -->
+    <div v-else-if="view === 'group-select'" class="p-4 d-flex flex-column justify-content-center" style="min-height: 100vh;">
+        <h3 class="fw-bold mb-2">歡迎回來，</h3>
+        <h2 class="fw-bold mb-5" style="color: var(--primary-green)">{{ user.displayName }}</h2>
+        
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="card p-4 text-center h-100" @click="createGroupPrompt" style="cursor: pointer; border: 2px dashed var(--accent-clay);">
+                    <i class="fas fa-plus-circle fa-3x mb-3" style="color: var(--accent-clay);"></i>
+                    <h5 class="fw-bold">建立新家庭</h5>
+                    <p class="text-muted small mb-0">我是發起人，邀請家人加入</p>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card p-4 text-center h-100" @click="showJoinInput = !showJoinInput" style="cursor: pointer;">
+                    <i class="fas fa-door-open fa-3x mb-3" style="color: var(--primary-green);"></i>
+                    <h5 class="fw-bold">加入現有家庭</h5>
+                    <p class="text-muted small mb-0">我有邀請連結或代碼</p>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="showJoinInput" class="mt-4 animate__animated animate__fadeIn">
+            <input v-model="inputGroupId" type="text" class="form-control text-center mb-3" placeholder="貼上邀請連結或代碼">
+            <button @click="joinGroup(inputGroupId)" class="btn btn-success w-100 rounded-pill py-2" :disabled="!inputGroupId" style="background-color: var(--primary-green); border: none;">確定加入</button>
+        </div>
+        
+        <div class="text-center mt-5">
+            <button @click="logout" class="btn btn-link text-muted text-decoration-none">登出帳號</button>
+        </div>
+    </div>
+
+    <!-- 3. 主儀表板 -->
+    <div v-else-if="view === 'dashboard'" class="pb-5">
+        <!-- 頂部導航 -->
+        <nav class="navbar px-3 sticky-top d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <div class="bg-white rounded-circle p-1 me-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                    <i class="fas fa-home text-success"></i>
+                </div>
+                <div>
+                    <div class="fw-bold lh-1" style="font-size: 1.1rem; color: var(--text-main);">{{ currentGroup?.name }}</div>
+                    <small class="text-muted" style="font-size: 0.7rem;">{{ members.length }} 位家人</small>
+                </div>
+            </div>
+            
+            <!-- 群組清單按鈕 -->
+            <button class="btn btn-light rounded-circle shadow-sm" style="width: 40px; height: 40px; background-color: var(--card-bg);" @click="openGroupManager">
+                <i class="fas fa-list-ul" style="color: var(--text-main);"></i>
+            </button>
+        </nav>
+
+        <div class="container py-4">
+            <!-- 打卡按鈕 -->
+            <button @click="checkIn" class="checkin-btn mb-4 position-relative overflow-hidden" :disabled="loading">
+                <i class="fas fa-check-circle"></i>
+                <span>我很平安</span>
+                <span style="font-size: 0.9rem; font-weight: normal; opacity: 0.9;">點擊回報今日狀況</span>
+            </button>
+
+            <!-- 家人狀態 -->
+            <div class="d-flex justify-content-between align-items-end mb-3 px-1">
+                <h6 class="fw-bold text-muted mb-0">家人狀態</h6>
+                <button class="btn btn-sm btn-light text-muted rounded-pill" @click="copyInviteLink"><i class="fas fa-link me-1"></i>邀請</button>
+            </div>
+
+            <div class="member-list mb-5">
+                <div v-for="m in sortedMembers" :key="m.uid" class="member-card p-3 mb-3 d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="position-relative">
+                            <img :src="m.photoURL" class="avatar me-3">
+                            <span class="position-absolute bottom-0 end-0 status-dot border border-white" :class="getStatusClass(m.lastCheckIn)" style="margin-right: 0;"></span>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center">
+                                <span class="fw-bold me-2">{{ m.displayName }}</span>
+                                <span v-if="m.role === 'admin'" class="role-badge role-admin">Admin</span>
+                                <!-- 管理員修改暱稱 -->
+                                <i v-if="myRole === 'admin' && m.uid !== user.uid" 
+                                   class="fas fa-pen text-muted ms-2 opacity-50" 
+                                   style="cursor: pointer; font-size: 0.8rem"
+                                   @click="showEditNameModal(m.uid, m.displayName)"></i>
+                            </div>
+                            <div class="small text-muted mt-1">
+                                {{ formatDate(m.lastCheckIn) }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 狀態文字 -->
+                    <div class="text-end">
+                        <span class="badge rounded-pill fw-normal" 
+                              :style="getStatusBadgeStyle(m.lastCheckIn)">
+                            {{ getStatusText(m.lastCheckIn) }}
+                        </span>
+                        <div v-if="myRole === 'admin' && m.uid !== user.uid" class="mt-1">
+                            <button @click="kickMember(m.uid, m.displayName)" class="btn btn-link p-0 text-danger text-decoration-none" style="font-size: 0.75rem;">移除</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 留言板 -->
+            <h6 class="fw-bold text-muted mb-3 px-1">留言板</h6>
+            <div class="chat-area">
+                <div v-if="messages.length === 0" class="text-center text-muted py-5">
+                    <i class="far fa-paper-plane fa-2x mb-3 opacity-50"></i><br>
+                    還沒有留言，傳遞第一份溫暖吧！
+                </div>
+                <div v-for="msg in messages" :key="msg.id" class="msg-card">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="msg-name">{{ getMemberName(msg.senderId) }}</span>
+                        <small class="text-muted" style="font-size: 0.7rem;">{{ formatTime(msg.createdAt) }}</small>
+                    </div>
+                    
+                    <div v-if="editingMsgId === msg.id">
+                        <input v-model="editingText" type="text" class="form-control form-control-sm mb-2">
+                        <div class="text-end">
+                            <button @click="cancelEdit" class="btn btn-sm btn-light rounded-pill me-1">取消</button>
+                            <button @click="updateMessage(msg.id)" class="btn btn-sm btn-success rounded-pill">儲存</button>
+                        </div>
+                    </div>
+                    <div v-else class="position-relative">
+                        <p class="msg-text mb-0">{{ msg.text }}</p>
+                        <div v-if="msg.senderId === user.uid || myRole === 'admin'" class="position-absolute end-0 top-50 translate-middle-y">
+                            <button class="btn btn-link text-muted p-1" @click="startEdit(msg)"><i class="fas fa-pen small"></i></button>
+                            <button class="btn btn-link text-danger p-1" @click="deleteMessage(msg.id)"><i class="fas fa-trash small"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group mt-3 shadow-sm rounded-pill overflow-hidden bg-white">
+                <input v-model="newMessage" @keyup.enter="postMessage" type="text" class="form-control border-0 ps-4" placeholder="輸入訊息...">
+                <button @click="postMessage" class="btn btn-white text-success pe-4"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: 群組管理清單 (新功能) -->
+    <div v-if="showGroupModal" class="position-fixed top-0 start-0 w-100 h-100 bg-black bg-opacity-50 d-flex align-items-end align-items-md-center justify-content-center" style="z-index: 1050">
+        <div class="modal-content p-4" style="max-width: 500px; width: 100%; max-height: 80vh; overflow-y: auto;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0">我的群組清單</h5>
+                <button @click="showGroupModal = false" class="btn-close"></button>
+            </div>
+            
+            <div class="list-group mb-4">
+                <div v-for="g in joinedGroups" :key="g.id" 
+                     class="list-group-item d-flex justify-content-between align-items-center p-3"
+                     :class="{'active-group': g.id === currentGroup?.id}">
+                    
+                    <div class="d-flex align-items-center flex-grow-1" @click="switchGroup(g.id)" style="cursor: pointer;">
+                        <i class="fas fa-home me-3" :class="g.id === currentGroup?.id ? 'text-success' : 'text-muted'"></i>
+                        <span class="fw-bold text-dark">{{ g.name }}</span>
+                    </div>
+
+                    <!-- 管理按鈕區 -->
+                    <div class="dropdown ms-2">
+                        <button class="btn btn-light btn-sm rounded-circle" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v text-muted"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                            <li><h6 class="dropdown-header">管理 {{ g.name }}</h6></li>
+                            
+                            <!-- 切換 -->
+                            <li><a class="dropdown-item" href="#" @click="switchGroup(g.id)">
+                                <i class="fas fa-sign-in-alt me-2 text-success"></i>進入群組
+                            </a></li>
+                            
+                            <!-- 修改名稱 (如果是目前群組的管理員) -->
+                            <!-- 注意：為了效能，這裡只允許修改「當前」群組名稱，若要修改其他群組需先切換 -->
+                            <li v-if="g.id === currentGroup?.id && myRole === 'admin'">
+                                <a class="dropdown-item" href="#" @click="renameGroupPrompt">
+                                    <i class="fas fa-pen me-2"></i>修改名稱
+                                </a>
+                            </li>
+                            
+                            <li><hr class="dropdown-divider"></li>
+                            
+                            <!-- 退出/刪除判斷 -->
+                            <!-- 如果是當前群組，我們可以準確判斷人數 -->
+                            <li v-if="g.id === currentGroup?.id">
+                                <a v-if="members.length === 1" class="dropdown-item text-danger" href="#" @click="deleteGroup">
+                                    <i class="fas fa-trash me-2"></i>刪除群組 (剩你一人)
+                                </a>
+                                <a v-else class="dropdown-item text-danger" href="#" @click="leaveGroup">
+                                    <i class="fas fa-sign-out-alt me-2"></i>退出群組
+                                </a>
+                            </li>
+                            <!-- 如果不是當前群組，預設顯示退出 (防呆：點擊後若發現是最後一人會提示需先切換刪除) -->
+                            <li v-else>
+                                <a class="dropdown-item text-danger" href="#" @click="leaveOtherGroup(g.id)">
+                                    <i class="fas fa-sign-out-alt me-2"></i>退出群組
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <button @click="createGroupPrompt" class="btn btn-outline-success w-100 rounded-pill py-2">
+                <i class="fas fa-plus me-2"></i>建立新群組
+            </button>
+            <button @click="showJoinInputInModal = !showJoinInputInModal" class="btn btn-link text-muted w-100 mt-2 text-decoration-none">
+                加入其他群組
+            </button>
+            
+            <div v-if="showJoinInputInModal" class="mt-3">
+                <input v-model="inputGroupId" type="text" class="form-control mb-2" placeholder="貼上連結...">
+                <button @click="joinGroup(inputGroupId)" class="btn btn-dark w-100 rounded-pill">加入</button>
+            </div>
+            
+            <hr class="my-4">
+            
+            <div class="text-center">
+                <button @click="showEditNameModal(user.uid, user.displayName)" class="btn btn-light btn-sm rounded-pill me-2">改我的名字</button>
+                <button @click="logout" class="btn btn-light btn-sm text-muted rounded-pill">登出</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 暱稱修改 Modal -->
+    <div v-if="showNameModal" class="position-fixed top-0 start-0 w-100 h-100 bg-black bg-opacity-75 d-flex align-items-center justify-content-center" style="z-index: 1060">
+        <div class="modal-content p-4" style="width: 85%; max-width: 350px;">
+            <h5 class="fw-bold mb-3">修改顯示名稱</h5>
+            <input v-model="tempName" type="text" class="form-control mb-3" placeholder="輸入新名稱">
+            <div class="d-flex justify-content-end gap-2">
+                <button @click="showNameModal = false" class="btn btn-light rounded-pill">取消</button>
+                <button @click="saveName" class="btn btn-success rounded-pill px-4">儲存</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Vue 3 & Firebase -->
+<script type="module">
+    import { createApp, ref, onMounted, computed, nextTick } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    // ★★★ 設定區：請將這裡換成你自己的 Firebase Config ★★★
+const firebaseConfig = {
+  apiKey: "AIzaSyDxEgkeYvXhcb-uPyT8njp_7UrdewPcHNE",
+  authDomain: "family-safe-checkin.firebaseapp.com",
+  projectId: "family-safe-checkin",
+  storageBucket: "family-safe-checkin.firebasestorage.app",
+  messagingSenderId: "1068537242511",
+  appId: "1:1068537242511:web:d33f42d7b87ae9cb9c21fa"
+};
+
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    createApp({
+        setup() {
+            const user = ref(null);
+            const view = ref('login'); 
+            const loading = ref(false);
+            const loadingText = ref('');
+            
+            // 資料
+            const currentGroup = ref(null);
+            const joinedGroups = ref([]); 
+            const members = ref([]);
+            const messages = ref([]);
+            const inputGroupId = ref('');
+            
+            // UI 控制
+            const showJoinInput = ref(false);
+            const showGroupModal = ref(false); // 群組清單 Modal
+            const showJoinInputInModal = ref(false);
+            const showNameModal = ref(false);
+            
+            // 編輯區
+            const newMessage = ref('');
+            const editingMsgId = ref(null);
+            const editingText = ref('');
+            const tempName = ref('');
+            const targetUid = ref('');
+
+            // computed
+            const myRole = computed(() => {
+                const me = members.value.find(m => m.uid === user.value?.uid);
+                return me ? me.role : 'member';
+            });
+            const myMemberProfile = computed(() => members.value.find(m => m.uid === user.value?.uid) || {});
+            
+            const sortedMembers = computed(() => {
+                return [...members.value].sort((a, b) => {
+                    if (a.uid === user.value.uid) return -1;
+                    if (b.uid === user.value.uid) return 1;
+                    return (a.lastCheckIn?.seconds || 0) - (b.lastCheckIn?.seconds || 0);
+                });
+            });
+
+            // 1. 初始化與登入
+            onMounted(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const inviteCode = urlParams.get('invite');
+                
+                onAuthStateChanged(auth, async (currentUser) => {
+                    user.value = currentUser;
+                    if (currentUser) {
+                        await fetchJoinedGroups(currentUser.uid);
+                        
+                        if (inviteCode) {
+                            joinGroup(inviteCode);
+                        } else if (joinedGroups.value.length > 0) {
+                            const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                            if (userDoc.exists() && userDoc.data().lastGroupId) {
+                                if (joinedGroups.value.find(g => g.id === userDoc.data().lastGroupId)) {
+                                    loadGroup(userDoc.data().lastGroupId);
+                                } else {
+                                    view.value = 'group-select';
+                                }
+                            } else {
+                                view.value = 'group-select';
+                            }
+                        } else {
+                            view.value = 'group-select';
+                        }
+                    } else {
+                        view.value = 'login';
+                    }
+                });
+            });
+
+            const fetchJoinedGroups = async (uid) => {
+                const userDoc = await getDoc(doc(db, 'users', uid));
+                if (userDoc.exists() && userDoc.data().joinedGroups) {
+                    const groupsMap = userDoc.data().joinedGroups;
+                    joinedGroups.value = Object.keys(groupsMap).map(key => ({
+                        id: key,
+                        name: groupsMap[key]
+                    }));
+                } else {
+                    joinedGroups.value = [];
+                }
+            };
+
+            const login = async () => {
+                try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch (e) { alert(e.message); }
+            };
+            const logout = async () => { await signOut(auth); view.value = 'login'; };
+
+            // 2. 群組操作
+            const createGroupPrompt = () => {
+                const groupName = prompt("請為你的家庭群組取個名字：", "溫暖的家");
+                if (groupName) createGroup(groupName);
+            };
+
+            const createGroup = async (groupName) => {
+                try {
+                    loading.value = true;
+                    loadingText.value = '正在建造溫暖的家...'; // 緩衝文字
+                    
+                    const groupRef = await addDoc(collection(db, 'groups'), {
+                        name: groupName,
+                        ownerId: user.value.uid,
+                        createdAt: serverTimestamp()
+                    });
+                    
+                    await setDoc(doc(db, `groups/${groupRef.id}/members`, user.value.uid), {
+                        uid: user.value.uid,
+                        displayName: user.value.displayName,
+                        photoURL: user.value.photoURL,
+                        role: 'admin',
+                        lastCheckIn: serverTimestamp()
+                    });
+
+                    const updateData = {};
+                    updateData[`joinedGroups.${groupRef.id}`] = groupName;
+                    updateData['lastGroupId'] = groupRef.id;
+                    await setDoc(doc(db, 'users', user.value.uid), updateData, { merge: true });
+
+                    await fetchJoinedGroups(user.value.uid);
+                    await loadGroup(groupRef.id);
+                    
+                    showGroupModal.value = false; // 關閉列表
+                } catch (e) { alert("建立失敗: " + e.message); } 
+                finally { 
+                    loading.value = false; 
+                    loadingText.value = '';
+                }
+            };
+
+            const joinGroup = async (rawInput) => {
+                if (!rawInput) return;
+                loading.value = true;
+                loadingText.value = '正在加入...';
+                
+                let groupId = rawInput.trim();
+                if (groupId.includes('http') || groupId.includes('invite=')) {
+                    try {
+                        const url = new URL(groupId);
+                        const code = url.searchParams.get('invite');
+                        if (code) groupId = code;
+                    } catch (e) {
+                        if (groupId.includes('invite=')) {
+                            groupId = groupId.split('invite=')[1].split('&')[0];
+                        }
+                    }
+                }
+                
+                if (groupId.includes('/')) {
+                    alert("連結格式錯誤");
+                    loading.value = false;
+                    return;
+                }
+
+                try {
+                    const groupDoc = await getDoc(doc(db, 'groups', groupId));
+                    if (!groupDoc.exists()) {
+                        alert("找不到此群組");
+                        return;
+                    }
+
+                    await setDoc(doc(db, `groups/${groupId}/members`, user.value.uid), {
+                        uid: user.value.uid,
+                        displayName: user.value.displayName,
+                        photoURL: user.value.photoURL,
+                        role: 'member',
+                        lastCheckIn: serverTimestamp()
+                    }, { merge: true });
+
+                    const groupName = groupDoc.data().name;
+                    const updateData = {};
+                    updateData[`joinedGroups.${groupId}`] = groupName;
+                    updateData['lastGroupId'] = groupId;
+                    await setDoc(doc(db, 'users', user.value.uid), updateData, { merge: true });
+                    
+                    await fetchJoinedGroups(user.value.uid);
+                    await loadGroup(groupId);
+                    
+                    inputGroupId.value = '';
+                    showJoinInput.value = false;
+                    showGroupModal.value = false;
+
+                } catch (e) {
+                    alert("加入失敗: " + e.message);
+                } finally {
+                    loading.value = false;
+                    loadingText.value = '';
+                }
+            };
+
+            const loadGroup = async (groupId) => {
+                const groupDoc = await getDoc(doc(db, 'groups', groupId));
+                if (!groupDoc.exists()) {
+                    alert("該群組已不存在");
+                    // 這裡可以加入移除失效群組的邏輯
+                    view.value = 'group-select';
+                    return;
+                }
+                currentGroup.value = { id: groupId, ...groupDoc.data() };
+
+                await updateDoc(doc(db, 'users', user.value.uid), { lastGroupId: groupId });
+
+                onSnapshot(collection(db, `groups/${groupId}/members`), (snapshot) => {
+                    members.value = snapshot.docs.map(d => d.data());
+                });
+
+                const qMsg = query(collection(db, `groups/${groupId}/messages`), orderBy('createdAt', 'desc'), limit(50));
+                onSnapshot(qMsg, (snapshot) => {
+                    messages.value = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                });
+
+                view.value = 'dashboard';
+                showGroupModal.value = false; // 載入後關閉清單
+            };
+
+            // 3. 群組管理與切換
+            const openGroupManager = () => {
+                showGroupModal.value = true;
+            };
+
+            const switchGroup = (groupId) => {
+                loadGroup(groupId);
+            };
+
+            const renameGroupPrompt = async () => {
+                const newName = prompt("請輸入新的群組名稱", currentGroup.value.name);
+                if(newName && newName !== currentGroup.value.name) {
+                    loading.value = true;
+                    try {
+                        await updateDoc(doc(db, 'groups', currentGroup.value.id), { name: newName });
+                        // 更新本地
+                        currentGroup.value.name = newName;
+                        // 更新 User 的 joinedGroups 快取 (這一步是為了列表顯示正確)
+                        const updateData = {};
+                        updateData[`joinedGroups.${currentGroup.value.id}`] = newName;
+                        await setDoc(doc(db, 'users', user.value.uid), updateData, { merge: true });
+                        await fetchJoinedGroups(user.value.uid);
+                    } catch(e) { alert("修改失敗"); }
+                    finally { loading.value = false; }
+                }
+            };
+
+            const leaveOtherGroup = async (groupId) => {
+                if(!confirm("確定要退出此群組嗎？(請先切換至該群組確認是否為最後一人)")) return;
+                // 防呆：這裡只是從列表移除的簡單操作，建議引導使用者先切換進去
+                switchGroup(groupId);
+            };
+
+            const leaveGroup = async () => {
+                if(!confirm(`確定要離開「${currentGroup.value.name}」嗎？`)) return;
+                
+                loading.value = true;
+                try {
+                    // 1. 刪除成員
+                    await deleteDoc(doc(db, `groups/${currentGroup.value.id}/members`, user.value.uid));
+                    
+                    // 2. 更新 User
+                    const userRef = doc(db, 'users', user.value.uid);
+                    // 為了刪除 map 裡的 key，Firestore 需要用 FieldValue.delete()，這裡用簡單的取代法
+                    // 由於前端操作限制，重新讀取並過濾
+                    const userSnap = await getDoc(userRef);
+                    if(userSnap.exists()){
+                        const groups = userSnap.data().joinedGroups || {};
+                        delete groups[currentGroup.value.id];
+                        await updateDoc(userRef, { 
+                            joinedGroups: groups,
+                            lastGroupId: null 
+                        });
+                    }
+                    window.location.reload(); 
+                } catch(e) { alert("退出失敗"); loading.value = false; }
+            };
+
+            const deleteGroup = async () => {
+                const confirmInput = prompt(`【危險動作】\n群組將被永久刪除！\n\n請輸入群組名稱「${currentGroup.value.name}」以確認刪除：`);
+                if(confirmInput !== currentGroup.value.name) {
+                    if(confirmInput !== null) alert("名稱不符，取消刪除");
+                    return;
+                }
+                
+                loading.value = true;
+                try {
+                    await deleteDoc(doc(db, 'groups', currentGroup.value.id));
+                    // 也要把自己從 user 記錄移除
+                    const userRef = doc(db, 'users', user.value.uid);
+                    const userSnap = await getDoc(userRef);
+                    if(userSnap.exists()){
+                        const groups = userSnap.data().joinedGroups || {};
+                        delete groups[currentGroup.value.id];
+                        await updateDoc(userRef, { joinedGroups: groups, lastGroupId: null });
+                    }
+                    alert("群組已刪除");
+                    window.location.reload();
+                } catch(e) { alert("刪除失敗"); loading.value = false; }
+            };
+
+            // 4. 其他功能
+            const checkIn = async () => {
+                loading.value = true;
+                try {
+                    await updateDoc(doc(db, `groups/${currentGroup.value.id}/members`, user.value.uid), {
+                        lastCheckIn: serverTimestamp()
+                    });
+                } catch (e) { alert("打卡失敗"); } finally { loading.value = false; }
+            };
+
+            const postMessage = async () => {
+                if (!newMessage.value.trim()) return;
+                await addDoc(collection(db, `groups/${currentGroup.value.id}/messages`), {
+                    text: newMessage.value,
+                    senderId: user.value.uid,
+                    createdAt: serverTimestamp()
+                });
+                newMessage.value = '';
+            };
+
+            const copyInviteLink = () => {
+                const link = `${window.location.origin}${window.location.pathname}?invite=${currentGroup.value.id}`;
+                navigator.clipboard.writeText(link).then(() => alert("連結已複製"));
+            };
+            
+            const kickMember = async (targetId, name) => {
+                if (!confirm(`移除 ${name}?`)) return;
+                await deleteDoc(doc(db, `groups/${currentGroup.value.id}/members`, targetId));
+            };
+            
+            const showEditNameModal = (uid, currentName) => { targetUid.value = uid; tempName.value = currentName; showNameModal.value = true; };
+            const saveName = async () => {
+                if (!tempName.value.trim()) return;
+                await updateDoc(doc(db, `groups/${currentGroup.value.id}/members`, targetUid.value), { displayName: tempName.value });
+                // 如果是改自己的名字，也要更新 User Profile
+                if(targetUid.value === user.value.uid) {
+                    // 這裡可以選擇是否同步更新 users 集合的 displayName
+                }
+                showNameModal.value = false;
+            };
+            
+            const deleteMessage = async (mid) => { if(confirm("刪除?")) await deleteDoc(doc(db, `groups/${currentGroup.value.id}/messages`, mid)); };
+            const startEdit = (msg) => { editingMsgId.value = msg.id; editingText.value = msg.text; };
+            const cancelEdit = () => { editingMsgId.value = null; };
+            const updateMessage = async (mid) => {
+                if (!editingText.value.trim()) return;
+                await updateDoc(doc(db, `groups/${currentGroup.value.id}/messages`, mid), { text: editingText.value });
+                editingMsgId.value = null;
+            };
+
+            const getMemberName = (uid) => members.value.find(m => m.uid === uid)?.displayName || '家人';
+            const getStatusClass = (ts) => {
+                if (!ts) return 'danger';
+                const h = (new Date() - (ts.toDate ? ts.toDate() : new Date(ts))) / 36e5;
+                return h < 24 ? 'safe' : (h < 48 ? 'warning' : 'danger');
+            };
+            const getStatusText = (ts) => {
+                if (!ts) return '未回報';
+                const h = (new Date() - (ts.toDate ? ts.toDate() : new Date(ts))) / 36e5;
+                return h < 24 ? '平安' : (h < 48 ? '逾1天' : '需關切');
+            };
+            const getStatusBadgeStyle = (ts) => {
+                const s = getStatusClass(ts);
+                if(s === 'safe') return { color: 'var(--primary-green)', fontWeight: 'bold' };
+                if(s === 'warning') return { color: 'var(--warning)', fontWeight: 'bold' };
+                return { color: 'var(--danger)', fontWeight: 'bold' };
+            };
+            const formatDate = (ts) => {
+                if (!ts) return '';
+                const d = ts.toDate ? ts.toDate() : new Date(ts);
+                const now = new Date();
+                // 簡單的日期顯示邏輯
+                if (d.toDateString() === now.toDateString()) {
+                    return `今天 ${d.toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'})}`;
+                }
+                return d.toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            };
+            const formatTime = (ts) => formatDate(ts); // alias
+
+            return {
+                user, view, loading, loadingText,
+                currentGroup, joinedGroups, members, messages, inputGroupId, 
+                showJoinInput, showGroupModal, showJoinInputInModal, showNameModal,
+                newMessage, editingMsgId, editingText, tempName,
+                myRole, myMemberProfile, sortedMembers,
+                login, logout, createGroupPrompt, createGroup, joinGroup, loadGroup, openGroupManager, switchGroup,
+                renameGroupPrompt, leaveOtherGroup, leaveGroup, deleteGroup,
+                copyInviteLink, kickMember, showEditNameModal, saveName, checkIn, postMessage, deleteMessage, startEdit, cancelEdit, updateMessage,
+                getMemberName, getStatusClass, getStatusText, getStatusBadgeStyle, formatDate, formatTime
+            };
+        }
+    }).mount('#app');
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
