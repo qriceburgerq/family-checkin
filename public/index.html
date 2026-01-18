@@ -61,7 +61,20 @@
             transition: transform 0.2s ease;
         }
         
-        .member-card:active { transform: scale(0.98); }
+        .member-card:active, .group-card:active { transform: scale(0.98); }
+
+        /* 群組列表卡片 (新) */
+        .group-card {
+            background-color: #fff;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.02);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .group-card:hover { border-color: var(--primary-green); }
 
         /* 狀態指示燈 */
         .status-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 6px; }
@@ -133,6 +146,7 @@
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
         
+        /* 列表樣式 */
         .list-group-item {
             border: none; margin-bottom: 8px; border-radius: 16px !important;
             background-color: var(--card-bg); color: var(--text-main);
@@ -170,24 +184,45 @@
         </button>
     </div>
 
-    <!-- 2. 群組選擇畫面 -->
+    <!-- 2. 群組選擇/首頁畫面 (修正：列出所有群組) -->
     <div v-else-if="view === 'group-select'" class="p-4 d-flex flex-column justify-content-center" style="min-height: 100vh;">
         <h3 class="fw-bold mb-2">歡迎回來，</h3>
-        <h2 class="fw-bold mb-5" style="color: var(--primary-green)">{{ user.displayName }}</h2>
+        <h2 class="fw-bold mb-4" style="color: var(--primary-green)">{{ user.displayName }}</h2>
         
+        <!-- 已加入的群組列表 (卡片式) -->
+        <div v-if="joinedGroups.length > 0" class="mb-4">
+            <h6 class="text-muted mb-3 fw-bold small text-uppercase">我的家庭</h6>
+            <div v-for="g in joinedGroups" :key="g.id" @click="loadGroup(g.id)" class="group-card d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="bg-light rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                        <i class="fas fa-home text-success"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-dark">{{ g.name }}</div>
+                        <!-- 顯示簡單狀態 -->
+                        <div v-if="groupStats[g.id]" class="small text-muted">
+                            <span class="me-2"><i class="fas fa-user me-1"></i>{{ groupStats[g.id].count }}人</span>
+                            <span v-if="groupStats[g.id].alert > 0" class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>{{ groupStats[g.id].alert }}人未報</span>
+                            <span v-else class="text-success"><i class="fas fa-check-circle me-1"></i>全員平安</span>
+                        </div>
+                        <div v-else class="small text-muted"><i class="fas fa-spinner fa-spin me-1"></i>載入中...</div>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right text-muted opacity-50"></i>
+            </div>
+        </div>
+
         <div class="row g-3">
-            <div class="col-12">
-                <div class="card p-4 text-center h-100" @click="createGroupPrompt" style="cursor: pointer; border: 2px dashed var(--accent-clay);">
-                    <i class="fas fa-plus-circle fa-3x mb-3" style="color: var(--accent-clay);"></i>
-                    <h5 class="fw-bold">建立新家庭</h5>
-                    <p class="text-muted small mb-0">我是發起人，邀請家人加入</p>
+            <div class="col-6">
+                <div class="card p-3 text-center h-100" @click="createGroupPrompt" style="cursor: pointer; border: 1px dashed var(--accent-clay); background: transparent;">
+                    <i class="fas fa-plus-circle fa-2x mb-2" style="color: var(--accent-clay);"></i>
+                    <small class="fw-bold text-muted">建立新家庭</small>
                 </div>
             </div>
-            <div class="col-12">
-                <div class="card p-4 text-center h-100" @click="showJoinInput = !showJoinInput" style="cursor: pointer;">
-                    <i class="fas fa-door-open fa-3x mb-3" style="color: var(--primary-green);"></i>
-                    <h5 class="fw-bold">加入現有家庭</h5>
-                    <p class="text-muted small mb-0">我有邀請連結或代碼</p>
+            <div class="col-6">
+                <div class="card p-3 text-center h-100" @click="showJoinInput = !showJoinInput" style="cursor: pointer; border: 1px dashed var(--primary-green); background: transparent;">
+                    <i class="fas fa-door-open fa-2x mb-2" style="color: var(--primary-green);"></i>
+                    <small class="fw-bold text-muted">加入現有</small>
                 </div>
             </div>
         </div>
@@ -205,7 +240,8 @@
     <!-- 3. 主儀表板 -->
     <div v-else-if="view === 'dashboard'" class="pb-5">
         <nav class="navbar px-3 sticky-top d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center" @click="view = 'group-select'" style="cursor: pointer;">
+                <i class="fas fa-chevron-left me-2 text-muted"></i>
                 <div class="bg-white rounded-circle p-1 me-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
                     <i class="fas fa-home text-success"></i>
                 </div>
@@ -226,6 +262,13 @@
                 <span>我很平安</span>
                 <span style="font-size: 0.9rem; font-weight: normal; opacity: 0.9;">點擊回報今日狀況</span>
             </button>
+
+            <!-- 打卡後的主動通知按鈕 (新功能) -->
+            <div v-if="justCheckedIn" class="mb-4 animate__animated animate__fadeIn">
+                <button @click="shareStatus" class="btn btn-outline-success w-100 rounded-pill py-2 border-2 fw-bold">
+                    <i class="fab fa-line me-2"></i>傳送 LINE 報平安
+                </button>
+            </div>
 
             <div class="d-flex justify-content-between align-items-end mb-3 px-1">
                 <h6 class="fw-bold text-muted mb-0">家人狀態</h6>
@@ -316,7 +359,16 @@
                     
                     <div class="d-flex align-items-center flex-grow-1" @click="switchGroup(g.id)" style="cursor: pointer;">
                         <i class="fas fa-home me-3" :class="g.id === currentGroup?.id ? 'text-success' : 'text-muted'"></i>
-                        <span class="fw-bold text-dark">{{ g.name }}</span>
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold text-dark">{{ g.name }}</span>
+                            <!-- 列表中的狀態資訊 -->
+                            <small v-if="groupStats[g.id]" class="text-muted" style="font-size: 0.75rem;">
+                                {{ groupStats[g.id].count }}位成員 · 
+                                <span :class="groupStats[g.id].alert > 0 ? 'text-danger' : 'text-success'">
+                                    {{ groupStats[g.id].alert > 0 ? `${groupStats[g.id].alert}人需關切` : '平安' }}
+                                </span>
+                            </small>
+                        </div>
                     </div>
 
                     <div class="dropdown ms-2">
@@ -328,11 +380,13 @@
                             <li><a class="dropdown-item" href="#" @click="switchGroup(g.id)"><i class="fas fa-sign-in-alt me-2 text-success"></i>進入群組</a></li>
                             <li v-if="g.id === currentGroup?.id && myRole === 'admin'"><a class="dropdown-item" href="#" @click="renameGroupPrompt"><i class="fas fa-pen me-2"></i>修改名稱</a></li>
                             <li><hr class="dropdown-divider"></li>
+                            <!-- 刪除與退出：依據是否為當下群組做不同處理 -->
                             <li v-if="g.id === currentGroup?.id">
-                                <a v-if="members.length === 1" class="dropdown-item text-danger" href="#" @click="deleteGroup"><i class="fas fa-trash me-2"></i>刪除群組 (剩你一人)</a>
+                                <a v-if="members.length === 1" class="dropdown-item text-danger" href="#" @click="deleteGroup"><i class="fas fa-trash me-2"></i>刪除群組</a>
                                 <a v-else class="dropdown-item text-danger" href="#" @click="leaveGroup"><i class="fas fa-sign-out-alt me-2"></i>退出群組</a>
                             </li>
                             <li v-else>
+                                <!-- 對於非當下群組，因為沒有即時成員名單，預設只顯示退出 -->
                                 <a class="dropdown-item text-danger" href="#" @click="leaveOtherGroup(g.id)"><i class="fas fa-sign-out-alt me-2"></i>退出群組</a>
                             </li>
                         </ul>
@@ -377,10 +431,10 @@
 
 <!-- Vue 3 & Firebase -->
 <script type="module">
-    import { createApp, ref, onMounted, computed, nextTick } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
+    import { createApp, ref, onMounted, computed, nextTick, watch } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-    import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+    import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
     // ★★★ 設定區：請將這裡換成你自己的 Firebase Config ★★★
 const firebaseConfig = {
@@ -391,7 +445,6 @@ const firebaseConfig = {
   messagingSenderId: "65256940934",
   appId: "1:65256940934:web:f8af51f072558f78acf807"
 };
-
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -411,11 +464,15 @@ const firebaseConfig = {
             const messages = ref([]);
             const inputGroupId = ref('');
             
+            // 統計資料 Cache { groupId: { count: 5, alert: 1 } }
+            const groupStats = ref({}); 
+            
             // UI 控制
             const showJoinInput = ref(false);
-            const showGroupModal = ref(false); // 群組清單 Modal
+            const showGroupModal = ref(false); 
             const showJoinInputInModal = ref(false);
             const showNameModal = ref(false);
+            const justCheckedIn = ref(false); // 控制顯示分享按鈕
             
             // 編輯區
             const newMessage = ref('');
@@ -449,45 +506,50 @@ const firebaseConfig = {
                 
                 onAuthStateChanged(auth, async (currentUser) => {
                     user.value = currentUser;
-                    if (userUnsub) { userUnsub(); userUnsub = null; } // 清除舊監聽
+                    if (userUnsub) { userUnsub(); userUnsub = null; } 
 
                     if (currentUser) {
-                        // ★★★ 修正點：即時監聽使用者資料，確保群組清單自動更新 ★★★
-                        // 修正讀取邏輯：同時讀取正確的 Map 結構與誤寫的扁平欄位
+                        // 監聽使用者資料以更新群組列表
                         userUnsub = onSnapshot(doc(db, 'users', currentUser.uid), (docSnap) => {
                             if (docSnap.exists()) {
                                 const data = docSnap.data();
                                 const groups = [];
                                 
-                                // 1. 讀取正確的 joinedGroups Map
                                 if (data.joinedGroups) {
                                     Object.keys(data.joinedGroups).forEach(key => {
                                         groups.push({ id: key, name: data.joinedGroups[key] });
                                     });
                                 }
-                                
-                                // 2. 救援邏輯：讀取誤寫的 "joinedGroups.xxx" 扁平欄位
+                                // 救援邏輯
                                 Object.keys(data).forEach(key => {
                                     if (key.startsWith('joinedGroups.')) {
                                         const realId = key.split('.')[1];
-                                        // 避免重複加入 (如果 id 已經在上面的 Map 讀到了，就略過)
                                         if (realId && !groups.find(g => g.id === realId)) {
                                             groups.push({ id: realId, name: data[key] });
                                         }
                                     }
                                 });
-                                
                                 joinedGroups.value = groups;
+                                
+                                // 當群組列表更新時，若在選單頁面，更新統計資料
+                                if (view.value === 'group-select') {
+                                    fetchGroupStats();
+                                }
                             }
                         });
 
-                        // 初始導航邏輯 (僅執行一次)
+                        // 初始導航邏輯
                         const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
                         if (inviteCode) {
                             joinGroup(inviteCode);
                         } else if (userDoc.exists() && userDoc.data().lastGroupId) {
-                            // 這裡直接載入 lastGroupId，清單會由上方的監聽器自動處理
-                            loadGroup(userDoc.data().lastGroupId);
+                            // 嘗試載入上次群組
+                            try {
+                                await loadGroup(userDoc.data().lastGroupId);
+                            } catch (e) {
+                                // 若載入失敗(例如群組被刪除)，回到選擇頁
+                                view.value = 'group-select';
+                            }
                         } else {
                             view.value = 'group-select';
                         }
@@ -497,12 +559,42 @@ const firebaseConfig = {
                 });
             });
 
+            // 監聽 View 變化，如果切換到 group-select 或打開 Modal，就抓取統計資料
+            watch([view, showGroupModal], ([newView, newModal]) => {
+                if (newView === 'group-select' || newModal) {
+                    fetchGroupStats();
+                }
+            });
+
+            // 抓取所有群組的統計資料 (人數/狀態)
+            const fetchGroupStats = async () => {
+                // 為了節省資源，每次打開只抓取一次，或者每隔一段時間抓取 (這裡採每次打開抓取)
+                for (const group of joinedGroups.value) {
+                    // 如果已經有資料且是最近抓的(簡易快取)，可以跳過，這裡為了即時性每次都抓
+                    try {
+                        const membersRef = collection(db, `groups/${group.id}/members`);
+                        const snapshot = await getDocs(membersRef);
+                        const total = snapshot.size;
+                        let alertCount = 0;
+                        snapshot.forEach(doc => {
+                            const data = doc.data();
+                            if (getStatusClass(data.lastCheckIn) !== 'safe') {
+                                alertCount++;
+                            }
+                        });
+                        groupStats.value[group.id] = { count: total, alert: alertCount };
+                    } catch (e) {
+                        console.error("Stats fetch error", e);
+                    }
+                }
+            };
+
             const login = async () => {
                 try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch (e) { alert(e.message); }
             };
             const logout = async () => { 
                 await signOut(auth); 
-                if (userUnsub) userUnsub(); // 登出停止監聽
+                if (userUnsub) userUnsub(); 
                 view.value = 'login'; 
             };
 
@@ -531,15 +623,10 @@ const firebaseConfig = {
                         lastCheckIn: serverTimestamp()
                     });
 
-                    // ★★★ 修正寫入邏輯：使用巢狀物件語法，確保寫入為 Map ★★★
                     const updateData = {
-                        joinedGroups: {
-                            [groupRef.id]: groupName
-                        },
+                        joinedGroups: { [groupRef.id]: groupName },
                         lastGroupId: groupRef.id
                     };
-                    
-                    // 使用 setDoc + merge 確保正確合併 Map 結構
                     await setDoc(doc(db, 'users', user.value.uid), updateData, { merge: true });
 
                     await loadGroup(groupRef.id);
@@ -591,12 +678,8 @@ const firebaseConfig = {
                     }, { merge: true });
 
                     const groupName = groupDoc.data().name;
-                    
-                    // ★★★ 修正寫入邏輯：使用巢狀物件語法 ★★★
                     const updateData = {
-                        joinedGroups: {
-                            [groupId]: groupName
-                        },
+                        joinedGroups: { [groupId]: groupName },
                         lastGroupId: groupId
                     };
                     await setDoc(doc(db, 'users', user.value.uid), updateData, { merge: true });
@@ -618,9 +701,8 @@ const firebaseConfig = {
             const loadGroup = async (groupId) => {
                 const groupDoc = await getDoc(doc(db, 'groups', groupId));
                 if (!groupDoc.exists()) {
-                    alert("該群組已不存在");
-                    view.value = 'group-select';
-                    return;
+                    // 若群組不存在，拋出錯誤讓上層處理
+                    throw new Error("Group not found");
                 }
                 currentGroup.value = { id: groupId, ...groupDoc.data() };
 
@@ -637,6 +719,7 @@ const firebaseConfig = {
 
                 view.value = 'dashboard';
                 showGroupModal.value = false; 
+                justCheckedIn.value = false; // 重置狀態
             };
 
             // 3. 群組管理與切換
@@ -645,7 +728,10 @@ const firebaseConfig = {
             };
 
             const switchGroup = (groupId) => {
-                loadGroup(groupId);
+                loadGroup(groupId).catch(() => {
+                    alert("該群組已不存在");
+                    view.value = 'group-select';
+                });
             };
 
             const renameGroupPrompt = async () => {
@@ -654,15 +740,8 @@ const firebaseConfig = {
                     loading.value = true;
                     try {
                         await updateDoc(doc(db, 'groups', currentGroup.value.id), { name: newName });
-                        // 更新本地
                         currentGroup.value.name = newName;
-                        
-                        // ★★★ 修正寫入邏輯：使用巢狀物件語法 ★★★
-                        const updateData = {
-                            joinedGroups: {
-                                [currentGroup.value.id]: newName
-                            }
-                        };
+                        const updateData = { joinedGroups: { [currentGroup.value.id]: newName } };
                         await setDoc(doc(db, 'users', user.value.uid), updateData, { merge: true });
                     } catch(e) { alert("修改失敗"); }
                     finally { loading.value = false; }
@@ -671,7 +750,6 @@ const firebaseConfig = {
 
             const leaveOtherGroup = async (groupId) => {
                 if(!confirm("確定要退出此群組嗎？(請先切換至該群組確認是否為最後一人)")) return;
-                // 防呆：這裡只是從列表移除的簡單操作，建議引導使用者先切換進去
                 switchGroup(groupId);
             };
 
@@ -680,24 +758,25 @@ const firebaseConfig = {
                 
                 loading.value = true;
                 try {
-                    // 1. 刪除成員
                     await deleteDoc(doc(db, `groups/${currentGroup.value.id}/members`, user.value.uid));
-                    
-                    // 2. 更新 User
                     const userRef = doc(db, 'users', user.value.uid);
-                    // 為了刪除 map 裡的 key，Firestore 需要用 FieldValue.delete()，這裡用簡單的取代法
-                    // 由於前端操作限制，重新讀取並過濾
+                    
                     const userSnap = await getDoc(userRef);
                     if(userSnap.exists()){
                         const groups = userSnap.data().joinedGroups || {};
                         delete groups[currentGroup.value.id];
+                        // 退出後將 lastGroupId 清空，避免下次自動登入錯誤
                         await updateDoc(userRef, { 
                             joinedGroups: groups,
                             lastGroupId: null 
                         });
                     }
-                    window.location.reload(); 
-                } catch(e) { alert("退出失敗"); loading.value = false; }
+                    // ★★★ 修正流程：退出後回到選擇頁面 ★★★
+                    currentGroup.value = null;
+                    view.value = 'group-select';
+                    showGroupModal.value = false;
+                } catch(e) { alert("退出失敗"); } 
+                finally { loading.value = false; }
             };
 
             const deleteGroup = async () => {
@@ -710,7 +789,6 @@ const firebaseConfig = {
                 loading.value = true;
                 try {
                     await deleteDoc(doc(db, 'groups', currentGroup.value.id));
-                    // 也要把自己從 user 記錄移除
                     const userRef = doc(db, 'users', user.value.uid);
                     const userSnap = await getDoc(userRef);
                     if(userSnap.exists()){
@@ -719,8 +797,12 @@ const firebaseConfig = {
                         await updateDoc(userRef, { joinedGroups: groups, lastGroupId: null });
                     }
                     alert("群組已刪除");
-                    window.location.reload();
-                } catch(e) { alert("刪除失敗"); loading.value = false; }
+                    // ★★★ 修正流程：刪除後回到選擇頁面 ★★★
+                    currentGroup.value = null;
+                    view.value = 'group-select';
+                    showGroupModal.value = false;
+                } catch(e) { alert("刪除失敗"); } 
+                finally { loading.value = false; }
             };
 
             // 4. 其他功能
@@ -730,7 +812,14 @@ const firebaseConfig = {
                     await updateDoc(doc(db, `groups/${currentGroup.value.id}/members`, user.value.uid), {
                         lastCheckIn: serverTimestamp()
                     });
+                    justCheckedIn.value = true; // 顯示分享按鈕
                 } catch (e) { alert("打卡失敗"); } finally { loading.value = false; }
+            };
+
+            const shareStatus = () => {
+                const text = `我已經在 ${new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'})} 打卡報平安囉！狀況良好。`;
+                const url = `https://line.me/R/msg/text/?${encodeURIComponent(text)}`;
+                window.open(url, '_blank');
             };
 
             const postMessage = async () => {
@@ -790,24 +879,23 @@ const firebaseConfig = {
                 if (!ts) return '';
                 const d = ts.toDate ? ts.toDate() : new Date(ts);
                 const now = new Date();
-                // 簡單的日期顯示邏輯
                 if (d.toDateString() === now.toDateString()) {
                     return `今天 ${d.toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'})}`;
                 }
                 return d.toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
             };
-            const formatTime = (ts) => formatDate(ts); // alias
+            const formatTime = (ts) => formatDate(ts); 
 
             return {
                 user, view, loading, loadingText,
-                currentGroup, joinedGroups, members, messages, inputGroupId, 
-                showJoinInput, showGroupModal, showJoinInputInModal, showNameModal,
+                currentGroup, joinedGroups, groupStats, members, messages, inputGroupId, 
+                showJoinInput, showGroupModal, showJoinInputInModal, showNameModal, justCheckedIn,
                 newMessage, editingMsgId, editingText, tempName,
                 myRole, myMemberProfile, sortedMembers,
                 login, logout, createGroupPrompt, createGroup, joinGroup, loadGroup, openGroupManager, switchGroup,
                 renameGroupPrompt, leaveOtherGroup, leaveGroup, deleteGroup,
-                copyInviteLink, kickMember, showEditNameModal, saveName, checkIn, postMessage, deleteMessage, startEdit, cancelEdit, updateMessage,
-                getMemberName, getStatusClass, getStatusText, getStatusBadgeStyle, formatDate, formatTime
+                copyInviteLink, kickMember, showEditNameModal, saveName, checkIn, shareStatus, postMessage, deleteMessage, startEdit, cancelEdit, updateMessage,
+                getMemberName, getStatusClass, getStatusText, getStatusBadgeStyle, formatDate, formatTime, fetchGroupStats
             };
         }
     }).mount('#app');
